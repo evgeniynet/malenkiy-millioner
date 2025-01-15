@@ -4,22 +4,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Маленький миллиардер</title>
+    <title>Маленький миллиардер — Мобильная версия</title>
     <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
             overflow-y: scroll;
-            height: 8000px;
-            /* Set this to the height of your game map */
-            margin: 0;
         }
 
         #gameContainer {
             width: 100vw;
-            height: 100vh;
-            overflow: scroll;
-            position: relative;
+    height: auto; /* or some height that doesn't force container scroll */
+    /* Remove overflow: scroll; */
+    position: relative;
         }
 
         canvas {
@@ -28,16 +25,18 @@
         }
 
         #hud {
-            position: fixed;
-            top: 10px;
-            left: 10px;
-            color: red;
-            background: rgba(255, 255, 255, 0.8);
-            padding: 10px;
-            border-radius: 5px;
-            z-index: 10;
-            font-size: 35px;
-        }
+                position: absolute;
+                z-index: 9999;
+                top: 10px;
+                left: 10px;
+                width: 400px;
+                z-index: 9999;
+                color: red;
+                background: rgba(255, 255, 255, 0.8);
+                padding: 10px;
+                border-radius: 5px;
+                font-size: 35px;
+            }
     </style>
 </head>
 
@@ -48,22 +47,36 @@
     <div id="hud">Баланс: <span id="balance">0</span> монет</div>
 
     <script>
-        function isMobileDevice() {
-            return /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-        }
-
-        if (isMobileDevice()) {
-            window.location.href = "mobile.html"; // Redirect to mobile version
-        }
 
         const gameContainer = document.getElementById('gameContainer');
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        // Размеры карты (8 экранов)
-        const mapWidth = window.innerWidth * 4;
-        const mapHeight = window.innerHeight * 8;
+        const hud = document.getElementById('hud');
 
+        function trackBodyScroll() {
+            // The offsets you want from the body’s top-left
+            const offsetTop = 10;
+            const offsetLeft = 10;
+
+            // Reflect how far the user has scrolled in the page
+            const scrollY = window.scrollY;
+            const scrollX = window.scrollX;
+            console.log(scrollY, scrollX);
+
+            // Update the HUD’s position
+            hud.style.top = (scrollY) + 'px';
+            hud.style.left = (scrollX) + 'px';
+        }
+
+        // Listen to scroll events on the window (the body)
+        window.addEventListener('scroll', trackBodyScroll);
+
+        // Ensure it’s correct on page load
+        trackBodyScroll();
+
+        const mapWidth = 4000;
+        const mapHeight = 8000; // Set height for mobile scrolling
         canvas.width = mapWidth;
         canvas.height = mapHeight;
 
@@ -75,28 +88,25 @@
         let backgroundImage;
 
         let currentPlayerFrame = 0;
-        const playerFrameInterval = 10; // Интервал смены кадров для игрока
+        const playerFrameInterval = 10;
         let playerFrameCount = 0;
 
         let frameCount = 0;
         let currentFrame = 0;
-        const frameInterval = 10; // Интервал смены кадров для монеток
+        const frameInterval = 10;
 
-        // Параметры игрока
         const player = {
-            x: 100, // Начальная позиция
-            y: 100,
+            x: canvas.width / 2 - 50,
+            y: canvas.height / 2 - 50,
             width: 100,
-            height: 100,
-            speed: 5
+            height: 100
         };
 
         const resources = [];
-        const resourceCount = 50; // 20 призов
+        const resourceCount = 50;
         const coinValue = 1;
 
-        // Функция для загрузки изображения с проверкой готовности
-        function loadImage(src) {
+        async function loadImage(src) {
             return new Promise((resolve, reject) => {
                 const img = new Image();
                 img.src = src;
@@ -105,20 +115,14 @@
             });
         }
 
-        // Инициализация игры после загрузки всех изображений
         async function initGame() {
             try {
-                // Загрузка фона карты
-                backgroundImage = await loadImage('map.jpeg'); // Укажите путь к вашей картинке
-
-                // Загрузка кадров анимации игрока (ребёнка)
+                backgroundImage = await loadImage('map.jpeg');
                 playerFrames = await Promise.all([
                     loadImage('baby_frame_0.png'),
                     loadImage('baby_frame_1.png'),
                     loadImage('baby_frame_2.png')
                 ]);
-
-                // Загрузка кадров анимации монеток
                 coinFrames = await Promise.all([
                     loadImage('money_frame_0.png'),
                     loadImage('money_frame_1.png'),
@@ -126,18 +130,13 @@
                     loadImage('money_frame_3.png')
                 ]);
 
-                // Генерация ресурсов
                 generateResources();
-
-                // Запуск игрового цикла
                 gameLoop();
-
             } catch (error) {
                 console.error('Ошибка загрузки изображений:', error);
             }
         }
 
-        // Генерация ресурсов
         function generateResources() {
             for (let i = 0; i < resourceCount; i++) {
                 resources.push({
@@ -149,14 +148,12 @@
             }
         }
 
-        // Отрисовка игрока с анимацией
         function drawPlayer() {
             playerFrameCount++;
             if (playerFrameCount >= playerFrameInterval) {
                 playerFrameCount = 0;
                 currentPlayerFrame = (currentPlayerFrame + 1) % playerFrames.length;
             }
-
             ctx.drawImage(
                 playerFrames[currentPlayerFrame],
                 player.x,
@@ -166,8 +163,7 @@
             );
         }
 
-        // Отрисовка ресурсов с анимацией
-        function drawResources() {
+        function drawResources(scrollY = 0) {
             frameCount++;
             if (frameCount >= frameInterval) {
                 frameCount = 0;
@@ -178,31 +174,28 @@
                 ctx.drawImage(
                     coinFrames[currentFrame],
                     resource.x,
-                    resource.y,
+                    resource.y - scrollY,
                     resource.width,
                     resource.height
                 );
             });
         }
 
-        // Отрисовка фона карты
         function drawBackground() {
             ctx.drawImage(backgroundImage, 0, 0, mapWidth, mapHeight);
         }
 
-        // Обновление баланса
         function updateBalance() {
             balanceElement.textContent = balance;
         }
 
-        // Проверка на столкновение игрока с ресурсами
-        function detectCollision() {
+        function detectCollision(scrollY = 0) {
             resources.forEach((resource, index) => {
                 if (
                     player.x < resource.x + resource.width &&
                     player.x + player.width > resource.x &&
-                    player.y < resource.y + resource.height &&
-                    player.y + player.height > resource.y
+                    player.y < resource.y - scrollY + resource.height &&
+                    player.y + player.height > resource.y - scrollY
                 ) {
                     resources.splice(index, 1);
                     balance += coinValue;
@@ -211,42 +204,20 @@
             });
         }
 
-        // Движение игрока с помощью клавиш
-        function movePlayer() {
-            if (keys['ArrowUp']) player.y -= player.speed;
-            if (keys['ArrowDown']) player.y += player.speed;
-            if (keys['ArrowLeft']) player.x -= player.speed;
-            if (keys['ArrowRight']) player.x += player.speed;
-
-            // Ограничение перемещения игрока внутри карты
-            if (player.x < 0) player.x = 0;
-            if (player.y < 0) player.y = 0;
-            if (player.x + player.width > mapWidth) player.x = mapWidth - player.width;
-            if (player.y + player.height > mapHeight) player.y = mapHeight - player.height;
-        }
-
-        const keys = {};
-
-        window.addEventListener('keydown', (e) => {
-            keys[e.key] = true;
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+            detectCollision(scrollY);
         });
 
-        window.addEventListener('keyup', (e) => {
-            keys[e.key] = false;
-        });
-
-        // Главный игровой цикл
         function gameLoop() {
+            const scrollY = window.scrollY;
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawBackground();
             drawPlayer();
-            drawResources();
-            movePlayer();
-            detectCollision();
+            drawResources(scrollY);
             requestAnimationFrame(gameLoop);
         }
 
-        // Запуск игры
         initGame();
     </script>
 </body>
