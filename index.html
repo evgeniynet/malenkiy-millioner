@@ -65,6 +65,30 @@
             height: 50px;
             cursor: pointer;
         }
+
+        #controls,
+        #controls button,
+        #controls button:active {
+            -webkit-touch-callout: none;
+            /* Prevents callouts like "Copy" on iOS */
+            -webkit-user-select: none;
+            /* Safari */
+            -khtml-user-select: none;
+            /* Konqueror */
+            -moz-user-select: none;
+            /* Firefox */
+            -ms-user-select: none;
+            /* IE/Edge */
+            user-select: none;
+            /* Standard */
+        }
+
+        #toggleMusic, #toggleMusic2 {
+            font-size: 18px;
+            width: auto;
+            padding: 5px 15px;
+            margin-top: 10px;
+        }
     </style>
 </head>
 
@@ -72,7 +96,8 @@
     <div id="gameContainer">
         <canvas id="gameCanvas"></canvas>
     </div>
-    <div id="hud">Баланс: <span id="balance">0</span> монет</div>
+    <div id="hud">Баланс: <span id="balance">0</span> монет <button id="toggleMusic">Музыка-1</button><button
+            id="toggleMusic2">Музыка-2</button></div>
     <div id="controls">
         <button id="btnUp">↑</button>
         <div class="middle-row">
@@ -87,8 +112,57 @@
         }
 
         if (isMobileDevice()) {
-        //    window.location.href = "mobile.html"; // Redirect to mobile version
+            //    window.location.href = "mobile.html"; // Redirect to mobile version
         }
+
+        let musicPlaying = false;
+        const musicButton = document.getElementById('toggleMusic');
+
+        // Create an audio element for background music
+        const backgroundMusic = new Audio('great.mp3'); // Replace with the actual path
+        backgroundMusic.loop = true; // Enable looping
+
+        let musicPlaying2 = false; // For the second track
+        const musicButton2 = document.getElementById('toggleMusic2');
+
+        // Create an audio element for the second background music
+        const backgroundMusic2 = new Audio('chill.mp3'); // Replace with the actual path
+        backgroundMusic2.loop = true; // Enable looping for the second track
+
+        musicButton.addEventListener('click', () => {
+            if (musicPlaying) {
+                backgroundMusic.pause();
+                musicButton.textContent = 'Музыка-1';
+            } else {
+                backgroundMusic2.pause();
+                musicButton2.textContent = 'Музыка-2';
+                musicPlaying2 = false;
+                backgroundMusic.play();
+                musicButton.textContent = 'Тишина-1';
+            }
+            musicPlaying = !musicPlaying;
+        });
+
+        musicButton2.addEventListener('click', () => {
+            if (musicPlaying2) {
+                backgroundMusic2.pause();
+                musicButton2.textContent = 'Музыка-2';
+            } else {
+                backgroundMusic.pause();
+                musicButton.textContent = 'Музыка-1';
+                musicPlaying = false;
+                backgroundMusic2.play();
+                musicButton2.textContent = 'Тишина-2';
+            }
+            musicPlaying2 = !musicPlaying2;
+        });
+
+        const controls = document.getElementById('controls');
+
+        // Prevent long press selection menu
+        controls.addEventListener('touchstart', (event) => {
+            event.preventDefault();
+        });
 
         const gameContainer = document.getElementById('gameContainer');
         const canvas = document.getElementById('gameCanvas');
@@ -284,41 +358,41 @@
         initGame();
 
 
-    const btnUp = document.getElementById('btnUp');
-    const btnDown = document.getElementById('btnDown');
-    const btnLeft = document.getElementById('btnLeft');
-    const btnRight = document.getElementById('btnRight');
+        const btnUp = document.getElementById('btnUp');
+        const btnDown = document.getElementById('btnDown');
+        const btnLeft = document.getElementById('btnLeft');
+        const btnRight = document.getElementById('btnRight');
 
-    function handlePress(key) {
-        keys[key] = true;
-    }
+        function handlePress(key) {
+            keys[key] = true;
+        }
 
-    function handleRelease(key) {
-        keys[key] = false;
-    }
+        function handleRelease(key) {
+            keys[key] = false;
+        }
 
-    // For continuous movement while holding:
-    btnUp.addEventListener('mousedown',   () => handlePress('ArrowUp'));
-    btnUp.addEventListener('mouseup',     () => handleRelease('ArrowUp'));
-    btnUp.addEventListener('touchstart',  () => handlePress('ArrowUp'));
-    btnUp.addEventListener('touchend',    () => handleRelease('ArrowUp'));
+        // For continuous movement while holding:
+        btnUp.addEventListener('mousedown', () => handlePress('ArrowUp'));
+        btnUp.addEventListener('mouseup', () => handleRelease('ArrowUp'));
+        btnUp.addEventListener('touchstart', () => handlePress('ArrowUp'));
+        btnUp.addEventListener('touchend', () => handleRelease('ArrowUp'));
 
-    btnDown.addEventListener('mousedown',   () => handlePress('ArrowDown'));
-    btnDown.addEventListener('mouseup',     () => handleRelease('ArrowDown'));
-    btnDown.addEventListener('touchstart',  () => handlePress('ArrowDown'));
-    btnDown.addEventListener('touchend',    () => handleRelease('ArrowDown'));
+        btnDown.addEventListener('mousedown', () => handlePress('ArrowDown'));
+        btnDown.addEventListener('mouseup', () => handleRelease('ArrowDown'));
+        btnDown.addEventListener('touchstart', () => handlePress('ArrowDown'));
+        btnDown.addEventListener('touchend', () => handleRelease('ArrowDown'));
 
-    btnLeft.addEventListener('mousedown',   () => handlePress('ArrowLeft'));
-    btnLeft.addEventListener('mouseup',     () => handleRelease('ArrowLeft'));
-    btnLeft.addEventListener('touchstart',  () => handlePress('ArrowLeft'));
-    btnLeft.addEventListener('touchend',    () => handleRelease('ArrowLeft'));
+        btnLeft.addEventListener('mousedown', () => handlePress('ArrowLeft'));
+        btnLeft.addEventListener('mouseup', () => handleRelease('ArrowLeft'));
+        btnLeft.addEventListener('touchstart', () => handlePress('ArrowLeft'));
+        btnLeft.addEventListener('touchend', () => handleRelease('ArrowLeft'));
 
-    btnRight.addEventListener('mousedown',   () => handlePress('ArrowRight'));
-    btnRight.addEventListener('mouseup',     () => handleRelease('ArrowRight'));
-    btnRight.addEventListener('touchstart',  () => handlePress('ArrowRight'));
-    btnRight.addEventListener('touchend',    () => handleRelease('ArrowRight'));
+        btnRight.addEventListener('mousedown', () => handlePress('ArrowRight'));
+        btnRight.addEventListener('mouseup', () => handleRelease('ArrowRight'));
+        btnRight.addEventListener('touchstart', () => handlePress('ArrowRight'));
+        btnRight.addEventListener('touchend', () => handleRelease('ArrowRight'));
 
-    // ... the rest of your existing code ...
+        // ... the rest of your existing code ...
     </script>
 </body>
 
