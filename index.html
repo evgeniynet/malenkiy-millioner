@@ -36,7 +36,7 @@
             padding: 10px;
             border-radius: 5px;
             z-index: 10;
-            font-size: 35px;
+            font-size: 25px;
         }
 
         #controls {
@@ -96,15 +96,13 @@
     <div id="gameContainer">
         <canvas id="gameCanvas"></canvas>
     </div>
-    <div id="hud">Баланс: <span id="balance">0</span> монет <button id="toggleMusic">Музыка-1</button><button
-            id="toggleMusic2">Музыка-2</button></div>
+    <div id="hud">Баланс: <span id="balance">0</span> монет <button id="toggleMusic">Муз-1</button><button
+            id="toggleMusic2">Муз-2</button></div>
     <div id="controls">
-        <button id="btnUp">↑</button>
         <div class="middle-row">
-            <button id="btnLeft">←</button>
-            <button id="btnRight">→</button>
-        </div>
-        <button id="btnDown">↓</button>
+            <button id="btnUp">↑</button> <button id="btnDown">↓</button> <button id="btnRight">→</button> <button id="btnLeft">←</button> 
+             
+         </div>
     </div>
     <script>
         function isMobileDevice() {
@@ -132,13 +130,13 @@
         musicButton.addEventListener('click', () => {
             if (musicPlaying) {
                 backgroundMusic.pause();
-                musicButton.textContent = 'Музыка-1';
+                musicButton.textContent = 'Муз-1';
             } else {
                 backgroundMusic2.pause();
-                musicButton2.textContent = 'Музыка-2';
+                musicButton2.textContent = 'Муз-2';
                 musicPlaying2 = false;
                 backgroundMusic.play();
-                musicButton.textContent = 'Тишина-1';
+                musicButton.textContent = 'Тихо-1';
             }
             musicPlaying = !musicPlaying;
         });
@@ -146,13 +144,13 @@
         musicButton2.addEventListener('click', () => {
             if (musicPlaying2) {
                 backgroundMusic2.pause();
-                musicButton2.textContent = 'Музыка-2';
+                musicButton2.textContent = 'Муз-2';
             } else {
                 backgroundMusic.pause();
-                musicButton.textContent = 'Музыка-1';
+                musicButton.textContent = 'Муз-1';
                 musicPlaying = false;
                 backgroundMusic2.play();
-                musicButton2.textContent = 'Тишина-2';
+                musicButton2.textContent = 'Тихо-2';
             }
             musicPlaying2 = !musicPlaying2;
         });
